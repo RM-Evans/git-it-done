@@ -1,5 +1,6 @@
 //reference the issues container in single-repo.html so we can write to it
 var issueContainerEl = document.querySelector("#issues-container");
+var limitWarningEl = document.querySelector('#limit-warning');
 
 var displayIssues = function(issues) {
     if(issues.length === 0) {
@@ -48,6 +49,11 @@ var getRepoIssues = function(repo) {
             response.json().then(function(data){
             //pass response data to dom function
             displayIssues(data);
+
+            // check if api has paginated issues
+            if (response.headers.get("Link")) {
+                displayWarning(repo);
+            }
             });
         }
         else {
@@ -58,4 +64,18 @@ var getRepoIssues = function(repo) {
     console.log(repo);
 };
 
-getRepoIssues("rm-evans/run-buddy");
+var displayWarning = function(repo) {
+    //add text to warning container
+    limitWarningEl.textContent= "To see more than 30 issues, visit ";
+
+    //generate html
+    var linkEl = document.createElement("a");
+    linkEl.textContent = "See More Issues on Github.com";
+    linkEl.setAttribute("href", "https://github.com/" + repo + "/issues");
+    linkEl.setAttribute("target", "_blank");
+
+    //append warning container
+    limitWarningEl.appendChild(linkEl);
+};
+
+getRepoIssues("facebook/react");
