@@ -1,5 +1,8 @@
 var userFormEl = document.querySelector("#user-form");
 var nameInputEl = document.querySelector("#username");
+//use buttons to sort by language
+var languageButtonsEl = document.querySelector("div, #language-buttons")
+
 //yay with these I can write to my html and generate the search results in span
 var repoContainerEl = document.querySelector("#repos-container");
 var repoSearchTerm = document.querySelector("#repo-search-term");
@@ -104,6 +107,32 @@ var displayRepos = function(repos, searchTerm) {
     console.log(searchTerm);
 };
 
-//getUserRepos("lernantino");
+var getFeaturedRepos = function(language) {
+    var apiUrl = "https://api.github.com/search/repositories?q=" + language + "+is:featured&sort=help-wanted-issues"
+
+    fetch(apiUrl).then(function(response) {
+        if (response.ok) {
+            //parse data as it is the Entire HTTP response, not the JSON - "extract JSON from the response"
+            response.json().then(function(data) {
+                displayRepos(data.items, language);
+            })
+        } else {
+            alert("Error: " + response.statusText )
+        }
+    });
+}
+
+var buttonClickHandler = function(event) {
+    var language = event.target.getAttribute("data-language")
+    
+    if(language){
+        getFeaturedRepos(language)
+        //then clear old content, will execute first bc its asynchronous
+        repoContainerEl.textContent = ""
+    }
+}
 
 userFormEl.addEventListener("submit", formSubmitHandler);
+
+//DELEGATING click handling on these elements TO their PARENT elements
+languageButtonsEl.addEventListener("click", buttonClickHandler)
