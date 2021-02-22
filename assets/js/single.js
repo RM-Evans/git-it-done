@@ -2,6 +2,31 @@
 var issueContainerEl = document.querySelector("#issues-container");
 var limitWarningEl = document.querySelector('#limit-warning');
 
+
+//add repo name to header
+var repoNameEl = document.querySelector("#repo-name")
+
+var getRepoName = function() {
+    var queryString = document.location.search;
+    //split at "=", get second item in array which is the user's input
+    //isolate repo from query string
+    var repoName = queryString.split("=")[1]
+    //console. log(repoName)
+    //only displays repo name and make fetch call if value for repoName exists
+    if(repoName){
+        //display repo name on the page
+        repoNameEl.textContent = repoName
+        getRepoIssues(repoName);
+    } else {
+        //go back to main page
+        document.location.replace("file:///C:/Users/evans/Desktop/projects/git-it-done/index.html");
+    }
+    
+    // OR return getRepoName
+}
+
+
+
 var displayIssues = function(issues) {
     if(issues.length === 0) {
         issueContainerEl.textContent = "This repo has no open issues!";
@@ -39,7 +64,7 @@ var displayIssues = function(issues) {
         issueEl.appendChild(typeEl);
     };
     }
-
+//passing in repo as a parameter into getRepoIssues function
 var getRepoIssues = function(repo) {
     var apiUrl = "https://api.github.com/repos/" + repo + "/issues?direction=asc";
 
@@ -57,11 +82,13 @@ var getRepoIssues = function(repo) {
             });
         }
         else {
-            alert("There was a problem with your request!");
+            //if not successful redirect to homepage
+            document.location.replace("file:///C:/Users/evans/Desktop/projects/git-it-done/index.html");
         }
+        
     });
 
-    console.log(repo);
+
 };
 
 var displayWarning = function(repo) {
@@ -78,4 +105,6 @@ var displayWarning = function(repo) {
     limitWarningEl.appendChild(linkEl);
 };
 
-getRepoIssues("facebook/react");
+// OR first called is passed through getRepoName => getRepoIssues
+//getRepoIssues(getRepoName())
+getRepoName();
